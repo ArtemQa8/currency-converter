@@ -13,6 +13,7 @@ cmd/cli/cli
 *.test
 *.out
 coverage.out
+coverage
 
 data/*.json
 !data/seed_rates.json
