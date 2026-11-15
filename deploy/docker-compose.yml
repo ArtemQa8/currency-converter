@@ -1,0 +1,33 @@
+name: currency-converter
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: converter-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: converter-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=converter
+      - POSTGRES_PASSWORD=converter
+      - POSTGRES_DB=converter
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U converter -d converter"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+  postgres_data:
