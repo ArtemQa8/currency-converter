@@ -66,7 +66,9 @@ func (s *ConverterService) getRateToRub(ctx context.Context, currency string) (m
 
 		for _, saver := range s.providers {
 			if rateSaver, ok := saver.(RateSaver); ok {
-				_ = rateSaver.SaveRate(ctx, rate)
+				if rate.Source == "cbr" {
+					_ = rateSaver.SaveRate(ctx, rate)
+				}
 			}
 		}
 

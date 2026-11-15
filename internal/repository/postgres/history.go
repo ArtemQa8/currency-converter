@@ -72,6 +72,6 @@ func (r *Repository) GetRate(ctx context.Context, baseCurrency, quoteCurrency st
 		QuoteCurrency: quote,
 		Value:         valDec,
 		Date:          date,
-		Source:        source,
+		Source:        "postgres",
 	}, nil
 }

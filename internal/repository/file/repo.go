@@ -76,6 +76,7 @@ func (r *Repository) GetRate(ctx context.Context, baseCurrency, quoteCurrency st
 	if err == nil {
 		if err := json.Unmarshal(fileBytes, &data); err == nil {
 			if rate, ok := data[key]; ok {
+				rate.Source = "file"
 				return rate, nil
 			}
 		}

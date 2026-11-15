@@ -47,6 +47,6 @@ func (c *Cache) GetRate(ctx context.Context, baseCurrency, quoteCurrency string)
 	if err != nil {
 		return model.Rate{}, err
 	}
-
+	rate.Source = "redis"
 	return rate, nil
 }
