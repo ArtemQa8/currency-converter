@@ -6,3 +6,20 @@ type Currency struct {
 	Symbol    string
 	Precision int
 }
+
+// GetPrecision возвращает количество знаков после запятой
+var currencyPrecisions = map[string]int32{
+	"JPY": 0, // Японская Йена
+	"KRW": 0, // Корейская Вона
+	"KWD": 3, // Кувейтский Динар
+	"BHD": 3, // Бахрейнский Динар
+	"BTC": 8, // Биткоин
+}
+
+func GetPrecision(currencyCode string) int32 {
+	if p, ok := currencyPrecisions[currencyCode]; ok {
+		return p
+	}
+
+	return 2
+}

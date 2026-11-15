@@ -1,0 +1,44 @@
+{
+  "USD_RUB": {
+    "BaseCurrency": "USD",
+    "QuoteCurrency": "RUB",
+    "Value": "85.0",
+    "Date": "2025-01-01T00:00:00Z",
+    "Source": "seed"
+  },
+  "EUR_RUB": {
+    "BaseCurrency": "EUR",
+    "QuoteCurrency": "RUB",
+    "Value": "90.0",
+    "Date": "2025-01-01T00:00:00Z",
+    "Source": "seed"
+  },
+  "GBP_RUB": {
+    "BaseCurrency": "GBP",
+    "QuoteCurrency": "RUB",
+    "Value": "100.0",
+    "Date": "2025-01-01T00:00:00Z",
+    "Source": "seed"
+  },
+  "CNY_RUB": {
+    "BaseCurrency": "CNY",
+    "QuoteCurrency": "RUB",
+    "Value": "12.5",
+    "Date": "2025-01-01T00:00:00Z",
+    "Source": "seed"
+  },
+  "JPY_RUB": {
+    "BaseCurrency": "JPY",
+    "QuoteCurrency": "RUB",
+    "Value": "0.6",
+    "Date": "2025-01-01T00:00:00Z",
+    "Source": "seed"
+  },
+  "KRW_RUB": {
+    "BaseCurrency": "KRW",
+    "QuoteCurrency": "RUB",
+    "Value": "0.065",
+    "Date": "2025-01-01T00:00:00Z",
+    "Source": "seed"
+  }
+}

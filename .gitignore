@@ -19,5 +19,7 @@ data/*.json
 !data/seed_rates.json
 
 .vscode/
-
+.postman
+postman
 Thumbs.db
+NOTES.md

@@ -6,6 +6,7 @@ import (
 
 	"github.com/ArtemQa8/currency-converter/internal/config"
 	"github.com/ArtemQa8/currency-converter/internal/repository/cbr"
+	"github.com/ArtemQa8/currency-converter/internal/repository/file"
 	"github.com/ArtemQa8/currency-converter/internal/repository/postgres"
 	"github.com/ArtemQa8/currency-converter/internal/repository/redis"
 	"github.com/ArtemQa8/currency-converter/internal/service"
@@ -18,15 +19,16 @@ func New(ctx context.Context, cfg *config.Config) (*service.ConverterService, er
 		return nil, fmt.Errorf("ошибка подключения к Postgres: %w", err)
 	}
 
-	redisCache := redis.NewCache(cfg.RedisURL)
-
+	redisCache := redis.NewCache(cfg.RedisURL, cfg.RedisTTL)
 	cbrClient := cbr.NewClient(cfg.CBRAPIURL)
+	fileRepo := file.NewRepository(cfg.RatesFilePath)
 
 	// Порядок важен (цепочка отказоустойчивости)
 	svc := service.NewConverterService(
-		cbrClient,
-		redisCache,
-		pgRepo,
+		redisCache, // Сначала кэш
+		cbrClient,  // ЦБ РФ
+		pgRepo,     // История из базы
+		fileRepo,   // Файл
 	)
 
 	return svc, nil

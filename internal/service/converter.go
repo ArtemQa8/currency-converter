@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ArtemQa8/currency-converter/internal/model"
 	"github.com/shopspring/decimal"
@@ -56,11 +55,6 @@ func (s *ConverterService) Convert(ctx context.Context, amount decimal.Decimal, 
 }
 
 func (s *ConverterService) getRateToRub(ctx context.Context, currency string) (model.Rate, error) {
-
-	if len(s.providers) == 0 {
-		return model.Rate{}, fmt.Errorf("нет доступных источников для получения курса")
-	}
-
 	var lastErr error
 
 	for _, provider := range s.providers {
@@ -69,6 +63,13 @@ func (s *ConverterService) getRateToRub(ctx context.Context, currency string) (m
 			lastErr = err
 			continue
 		}
+
+		for _, saver := range s.providers {
+			if rateSaver, ok := saver.(RateSaver); ok {
+				_ = rateSaver.SaveRate(ctx, rate)
+			}
+		}
+
 		return rate, nil
 	}
 

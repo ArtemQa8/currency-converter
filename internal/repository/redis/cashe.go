@@ -12,13 +12,15 @@ import (
 
 type Cache struct {
 	client *redis.Client
+	ttl    time.Duration
 }
 
-func NewCache(addr string) *Cache {
+func NewCache(addr string, ttl time.Duration) *Cache {
 	return &Cache{
 		client: redis.NewClient(&redis.Options{
 			Addr: addr,
 		}),
+		ttl: ttl,
 	}
 }
 
@@ -30,7 +32,7 @@ func (c *Cache) SaveRate(ctx context.Context, rate model.Rate) error {
 		return err
 	}
 
-	return c.client.Set(ctx, key, data, 24*time.Hour).Err()
+	return c.client.Set(ctx, key, data, c.ttl).Err()
 }
 
 func (c *Cache) GetRate(ctx context.Context, baseCurrency, quoteCurrency string) (model.Rate, error) {

@@ -9,3 +9,7 @@ import (
 type RateProvider interface {
 	GetRate(ctx context.Context, baseCurrency, quoteCurrency string) (model.Rate, error)
 }
+
+type RateSaver interface {
+	SaveRate(ctx context.Context, rate model.Rate) error
+}
