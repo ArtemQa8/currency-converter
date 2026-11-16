@@ -13,3 +13,7 @@ type RateProvider interface {
 type RateSaver interface {
 	SaveRate(ctx context.Context, rate model.Rate) error
 }
+
+type AllRatesProvider interface {
+	GetAllRates(ctx context.Context) (map[string]model.Rate, error)
+}

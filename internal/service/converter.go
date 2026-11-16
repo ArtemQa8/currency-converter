@@ -2,17 +2,26 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ArtemQa8/currency-converter/internal/model"
 	"github.com/shopspring/decimal"
+	"golang.org/x/sync/singleflight"
 )
 
 type ConverterService struct {
-	providers []RateProvider
+	cache   RateProvider
+	primary AllRatesProvider
+	backups []RateProvider
+	sf      singleflight.Group
 }
 
-func NewConverterService(providers ...RateProvider) *ConverterService {
-	return &ConverterService{providers: providers}
+func NewConverterService(cache RateProvider, primary AllRatesProvider, backups ...RateProvider) *ConverterService {
+	return &ConverterService{
+		cache:   cache,
+		primary: primary,
+		backups: backups,
+	}
 }
 
 func (s *ConverterService) Convert(ctx context.Context, amount decimal.Decimal, from, to string) (decimal.Decimal, error) {
@@ -55,25 +64,45 @@ func (s *ConverterService) Convert(ctx context.Context, amount decimal.Decimal, 
 }
 
 func (s *ConverterService) getRateToRub(ctx context.Context, currency string) (model.Rate, error) {
-	var lastErr error
+	rate, err := s.cache.GetRate(ctx, currency, "RUB")
+	if err == nil {
+		return rate, nil
+	}
 
-	for _, provider := range s.providers {
-		rate, err := provider.GetRate(ctx, currency, "RUB")
+	val, err, _ := s.sf.Do("fetch_all_cbr", func() (interface{}, error) {
+		allRates, err := s.primary.GetAllRates(ctx)
 		if err != nil {
-			lastErr = err
-			continue
+			return nil, err
 		}
 
-		for _, saver := range s.providers {
-			if rateSaver, ok := saver.(RateSaver); ok {
-				if rate.Source == "cbr" {
-					_ = rateSaver.SaveRate(ctx, rate)
+		for _, r := range allRates {
+			if saver, ok := s.cache.(RateSaver); ok {
+				_ = saver.SaveRate(ctx, r)
+			}
+
+			for _, backup := range s.backups {
+				if saver, ok := backup.(RateSaver); ok {
+					_ = saver.SaveRate(ctx, r)
 				}
 			}
 		}
 
-		return rate, nil
+		return allRates, nil
+	})
+
+	if err == nil {
+		allRates := val.(map[string]model.Rate)
+		if r, ok := allRates[currency]; ok {
+			return r, nil
+		}
 	}
 
-	return model.Rate{}, lastErr
+	for _, backup := range s.backups {
+		rate, err := backup.GetRate(ctx, currency, "RUB")
+		if err == nil {
+			return rate, nil
+		}
+	}
+
+	return model.Rate{}, fmt.Errorf("курс %s недоступен во всех источниках", currency)
 }

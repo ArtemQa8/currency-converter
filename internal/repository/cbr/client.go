@@ -33,6 +33,58 @@ type cbrResponse struct {
 	} `json:"Valute"`
 }
 
+// fetchAll скачивает JSON и возвращает мапу со всеми курсами к рублю.
+func (c *Client) fetchAll(ctx context.Context) (map[string]model.Rate, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.apiURL, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("API ЦБ вернул статус: %d", resp.StatusCode)
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var data cbrResponse
+	if err := json.Unmarshal(body, &data); err != nil {
+		return nil, err
+	}
+
+	rates := make(map[string]model.Rate)
+
+	for code, val := range data.Valute {
+		rateDec := decimal.NewFromFloat(val.Value)
+		nominalDec := decimal.NewFromInt(int64(val.Nominal))
+		normalizedValue := rateDec.Div(nominalDec)
+
+		rates[code] = model.Rate{
+			BaseCurrency:  code,
+			QuoteCurrency: "RUB",
+			Value:         normalizedValue,
+			Date:          data.Date,
+			Source:        "cbr",
+		}
+	}
+
+	return rates, nil
+}
+
+// GetAllRates возвращает курсы всех валют из ЦБ
+func (c *Client) GetAllRates(ctx context.Context) (map[string]model.Rate, error) {
+	return c.fetchAll(ctx)
+}
+
 // GetRate получает курс указанной валюты к рублю через API ЦБ
 // Поддерживает только рубль в качестве второй валюты (quoteCurrency)
 func (c *Client) GetRate(ctx context.Context, baseCurrency, quoteCurrency string) (model.Rate, error) {
@@ -46,48 +98,15 @@ func (c *Client) GetRate(ctx context.Context, baseCurrency, quoteCurrency string
 		return model.Rate{Value: decimal.NewFromInt(1), Source: "cbr"}, nil
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.apiURL, nil)
+	allRates, err := c.fetchAll(ctx)
 	if err != nil {
 		return model.Rate{}, err
 	}
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return model.Rate{}, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return model.Rate{}, fmt.Errorf("API ЦБ вернул статус: %d", resp.StatusCode)
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return model.Rate{}, err
-	}
-
-	var data cbrResponse
-	err = json.Unmarshal(body, &data)
-	if err != nil {
-		return model.Rate{}, err
-	}
-
-	val, ok := data.Valute[baseCurrency]
+	rate, ok := allRates[baseCurrency]
 	if !ok {
 		return model.Rate{}, fmt.Errorf("валюта %s не найдена в ответе ЦБ", baseCurrency)
 	}
 
-	// ЦБ отдает некоторые валюты за 100/1000 единиц
-	// Поэтому приводим курс к стоимости за 1 единицу
-	rateDec := decimal.NewFromFloat(val.Value)
-	nominalDec := decimal.NewFromInt(int64(val.Nominal))
-	normalizedValue := rateDec.Div(nominalDec)
-
-	return model.Rate{
-		BaseCurrency:  baseCurrency,
-		QuoteCurrency: "RUB",
-		Value:         normalizedValue,
-		Date:          data.Date,
-		Source:        "cbr",
-	}, nil
+	return rate, nil
 }
