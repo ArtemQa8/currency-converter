@@ -7,17 +7,17 @@ import (
 	"time"
 
 	"github.com/ArtemQa8/currency-converter/internal/model"
-	"github.com/redis/go-redis/v9"
+	redislib "github.com/redis/go-redis/v9"
 )
 
 type Cache struct {
-	client *redis.Client
+	client *redislib.Client
 	ttl    time.Duration
 }
 
 func NewCache(addr string, ttl time.Duration) *Cache {
 	return &Cache{
-		client: redis.NewClient(&redis.Options{
+		client: redislib.NewClient(&redislib.Options{
 			Addr: addr,
 		}),
 		ttl: ttl,
