@@ -1,13 +1,10 @@
+version: "2"
+
 run:
   tests: true
 
-linters-settings:
-  funlen:
-    lines: 150
-    statements: 80
-
 linters:
-  disable-all: true
+  default: none
   enable:
     - asciicheck
     - bodyclose
@@ -31,7 +28,6 @@ linters:
     - gomodguard
     - goprintffuncname
     - gosec
-    - gosimple
     - govet
     - importas
     - ineffassign
@@ -48,7 +44,6 @@ linters:
     - rowserrcheck
     - sqlclosecheck
     - staticcheck
-    - stylecheck
     - tagliatelle
     - thelper
     - tparallel
@@ -58,3 +53,8 @@ linters:
     - unused
     - wastedassign
     - whitespace
+
+  settings:
+    funlen:
+      lines: 150
+      statements: 80
