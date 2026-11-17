@@ -15,15 +15,18 @@ import (
 //go:embed seed_rates.json
 var seedData []byte
 
+// Repository описывает файловый репозиторий.
 type Repository struct {
 	filePath string
 	mu       sync.RWMutex
 }
 
+// NewRepository конструктор - создаёт новый файловый репозиторий.
 func NewRepository(filePath string) *Repository {
 	return &Repository{filePath: filePath}
 }
 
+// SaveRate сохраняет курс в файл.
 func (r *Repository) SaveRate(ctx context.Context, rate model.Rate) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -42,7 +45,7 @@ func (r *Repository) SaveRate(ctx context.Context, rate model.Rate) error {
 	}
 
 	tmpPath := r.filePath + ".tmp"
-	tmpFile, err := os.OpenFile(tmpPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	tmpFile, err := os.OpenFile(tmpPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {
 		return fmt.Errorf("ошибка открытия tmp файла: %w", err)
 	}
@@ -66,6 +69,7 @@ func (r *Repository) SaveRate(ctx context.Context, rate model.Rate) error {
 	return nil
 }
 
+// GetRate получает курс из файла (или из seed, если файла нет).
 func (r *Repository) GetRate(ctx context.Context, baseCurrency, quoteCurrency string) (model.Rate, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()

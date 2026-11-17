@@ -13,11 +13,13 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+// Client описывает клиента для работы с API ЦБ.
 type Client struct {
 	httpClient *http.Client
 	apiURL     string
 }
 
+// NewClient конструктор - создаёт нового клиента ЦБ.
 func NewClient(apiURL string) *Client {
 	return &Client{
 		httpClient: &http.Client{Timeout: 10 * time.Second},
@@ -82,13 +84,13 @@ func (c *Client) fetchAll(ctx context.Context) (map[string]model.Rate, error) {
 	return rates, nil
 }
 
-// GetAllRates возвращает курсы всех валют из ЦБ
+// GetAllRates возвращает курсы всех валют из ЦБ.
 func (c *Client) GetAllRates(ctx context.Context) (map[string]model.Rate, error) {
 	return c.fetchAll(ctx)
 }
 
-// GetRate получает курс указанной валюты к рублю через API ЦБ
-// Поддерживает только рубль в качестве второй валюты (quoteCurrency)
+// GetRate получает курс указанной валюты к рублю через API ЦБ.
+// Поддерживает только рубль в качестве второй валюты (quoteCurrency).
 func (c *Client) GetRate(ctx context.Context, baseCurrency, quoteCurrency string) (model.Rate, error) {
 
 	if quoteCurrency != model.RUB {

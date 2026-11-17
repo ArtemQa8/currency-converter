@@ -104,7 +104,11 @@ func main() {
 		}
 		jsonReq, _ := json.Marshal(reqData)
 
-		req, err := http.NewRequestWithContext(context.Background(), http.MethodPost, "http://localhost:8080/api/convert", strings.NewReader(string(jsonReq)))
+		req, err := http.NewRequestWithContext(
+			context.Background(),
+			http.MethodPost,
+			"http://localhost:8080/api/convert",
+			strings.NewReader(string(jsonReq)))
 		if err != nil {
 			fmt.Println("Ошибка создания запроса:", err)
 			continue
@@ -118,7 +122,7 @@ func main() {
 		}
 
 		body, err := io.ReadAll(resp.Body)
-		resp.Body.Close()
+		_ = resp.Body.Close()
 		if err != nil {
 			fmt.Println("Ошибка чтения ответа:", err)
 			continue

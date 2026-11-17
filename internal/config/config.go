@@ -10,6 +10,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// Config описывает конфигурацию приложения.
 type Config struct {
 	Port          string
 	PostgresURL   string
@@ -19,6 +20,7 @@ type Config struct {
 	RatesFilePath string
 }
 
+// Load загружает конфигурацию из переменных окружения.
 func Load() (*Config, error) {
 	_ = godotenv.Load()
 

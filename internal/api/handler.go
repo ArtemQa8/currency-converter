@@ -10,14 +10,17 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+// Handler описывает HTTP-Хендлеры.
 type Handler struct {
 	converterService *service.ConverterService
 }
 
+// NewHandler конструктор - создает новый хендлер.
 func NewHandler(convService *service.ConverterService) *Handler {
 	return &Handler{converterService: convService}
 }
 
+// Convert обрабатывает запрос на конвертацию.
 func (h *Handler) Convert(c *gin.Context) {
 	var req ConvertRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

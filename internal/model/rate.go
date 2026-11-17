@@ -7,6 +7,7 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+// Rate описывает модель курса валют.
 type Rate struct {
 	BaseCurrency  string
 	QuoteCurrency string

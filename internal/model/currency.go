@@ -6,6 +6,7 @@ const (
 	RUB = "RUB"
 )
 
+// Currency описывает модель валюты.
 type Currency struct {
 	Code      string
 	Name      string
@@ -13,7 +14,6 @@ type Currency struct {
 	Precision int
 }
 
-// GetPrecision возвращает количество знаков после запятой
 var currencyPrecisions = map[string]int32{
 	"JPY": 0, // Японская Йена
 	"KRW": 0, // Корейская Вона
@@ -22,6 +22,7 @@ var currencyPrecisions = map[string]int32{
 	"BTC": 8, // Биткоин
 }
 
+// GetPrecision возвращает количество знаков после запятой.
 func GetPrecision(currencyCode string) int32 {
 	if p, ok := currencyPrecisions[currencyCode]; ok {
 		return p

@@ -15,7 +15,7 @@ func setupTestClient(t *testing.T, status int, body string) (*cbr.Client, func()
 	t.Helper()
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(status)
-		w.Write([]byte(body))
+		_, _ = w.Write([]byte(body))
 	}))
 
 	client := cbr.NewClient(server.URL)

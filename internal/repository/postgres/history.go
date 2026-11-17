@@ -10,10 +10,12 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+// Repository описывает репозиторий для работы с историей курсов в Postgres.
 type Repository struct {
 	pool *pgxpool.Pool
 }
 
+// NewRepository конструктор - создаёт новый репозиторий Postgres.
 func NewRepository(ctx context.Context, connString string) (*Repository, error) {
 	pool, err := pgxpool.New(ctx, connString)
 	if err != nil {
@@ -27,6 +29,7 @@ func NewRepository(ctx context.Context, connString string) (*Repository, error) 
 	return &Repository{pool: pool}, nil
 }
 
+// SaveRate сохраняет курс в базу.
 func (r *Repository) SaveRate(ctx context.Context, rate model.Rate) error {
 	sqlQuery := `
 		INSERT INTO rate_history (base_currency, quote_currency, value, date, source)
@@ -44,6 +47,7 @@ func (r *Repository) SaveRate(ctx context.Context, rate model.Rate) error {
 	return err
 }
 
+// GetRate получает последний курс из базы.
 func (r *Repository) GetRate(ctx context.Context, baseCurrency, quoteCurrency string) (model.Rate, error) {
 	sqlQuery := `
 		SELECT base_currency, quote_currency, value, date, source

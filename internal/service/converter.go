@@ -10,6 +10,7 @@ import (
 	"golang.org/x/sync/singleflight"
 )
 
+// ConverterService описывает сервис конвертации.
 type ConverterService struct {
 	cache   RateProvider
 	primary AllRatesProvider
@@ -17,6 +18,7 @@ type ConverterService struct {
 	sf      singleflight.Group
 }
 
+// NewConverterService конструктор - создаёт новый сервис.
 func NewConverterService(cache RateProvider, primary AllRatesProvider, backups ...RateProvider) *ConverterService {
 	return &ConverterService{
 		cache:   cache,
@@ -25,6 +27,7 @@ func NewConverterService(cache RateProvider, primary AllRatesProvider, backups .
 	}
 }
 
+// Convert конвертирует сумму из одной валюты в другую.
 func (s *ConverterService) Convert(ctx context.Context, amount decimal.Decimal, from, to string) (decimal.Decimal, error) {
 
 	if from == to {
