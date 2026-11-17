@@ -11,6 +11,7 @@ func NewRouter(h *Handler) *gin.Engine {
 	api := r.Group("/api")
 	{
 		api.POST("/convert", h.Convert)
+		api.GET("/history", h.History)
 	}
 
 	return r

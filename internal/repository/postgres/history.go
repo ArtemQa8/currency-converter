@@ -4,6 +4,7 @@ package postgres
 //nolint:depguard
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/ArtemQa8/currency-converter/internal/model"
@@ -79,4 +80,51 @@ func (r *Repository) GetRate(ctx context.Context, baseCurrency, quoteCurrency st
 		Date:          date,
 		Source:        "postgres",
 	}, nil
+}
+
+// GetHistory возвращает историю курсов за указанное количество дней.
+func (r *Repository) GetHistory(ctx context.Context,
+	baseCurrency, quoteCurrency string, days int,
+) ([]model.Rate, error) {
+	query := `
+		SELECT base_currency, quote_currency, value, date, source
+		FROM rate_history
+		WHERE base_currency = $1 AND quote_currency = $2
+			AND date >= NOW() - ($3 * INTERVAL '1 day')
+		ORDER BY date ASC
+	`
+	rows, err := r.pool.Query(ctx, query, baseCurrency, quoteCurrency, days)
+	if err != nil {
+		return nil, fmt.Errorf("ошибка запроса истории: %w", err)
+	}
+	defer rows.Close()
+
+	var rates []model.Rate
+	for rows.Next() {
+		var base, quote, source, valStr string
+		var date time.Time
+
+		if err := rows.Scan(&base, &quote, &valStr, &date, &source); err != nil {
+			return nil, fmt.Errorf("ошибка сканирования строки: %w", err)
+		}
+
+		valDec, err := decimal.NewFromString(valStr)
+		if err != nil {
+			return nil, fmt.Errorf("ошибка парсинга decimal: %w", err)
+		}
+
+		rates = append(rates, model.Rate{
+			BaseCurrency:  base,
+			QuoteCurrency: quote,
+			Value:         valDec,
+			Date:          date,
+			Source:        source,
+		})
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("ошибка при итерации по строкам: %w", err)
+	}
+
+	return rates, nil
 }

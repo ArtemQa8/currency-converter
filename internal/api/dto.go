@@ -24,6 +24,8 @@ type HistoryRequest struct {
 // HistoryObject описывает один объект истории.
 type HistoryObject struct {
 	Date  time.Time `json:"date"`
+	From  string    `json:"from"`
+	To    string    `json:"to"`
 	Value float64   `json:"value"`
 }
 

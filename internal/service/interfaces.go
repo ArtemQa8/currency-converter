@@ -21,3 +21,8 @@ type RateSaver interface {
 type AllRatesProvider interface {
 	GetAllRates(ctx context.Context) (map[string]model.Rate, error)
 }
+
+// HistoryProvider описывает контракт для получения истори курсов.
+type HistoryProvider interface {
+	GetHistory(ctx context.Context, baseCurrency, quoteCurrency string, days int) ([]model.Rate, error)
+}

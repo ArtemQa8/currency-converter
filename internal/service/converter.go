@@ -20,7 +20,11 @@ type ConverterService struct {
 }
 
 // NewConverterService конструктор - создаёт новый сервис.
-func NewConverterService(cache RateProvider, primary AllRatesProvider, backups ...RateProvider) *ConverterService {
+func NewConverterService(
+	cache RateProvider,
+	primary AllRatesProvider,
+	backups ...RateProvider,
+) *ConverterService {
 	return &ConverterService{
 		cache:   cache,
 		primary: primary,
@@ -110,4 +114,14 @@ func (s *ConverterService) getRateToRub(ctx context.Context, currency string) (m
 	}
 
 	return model.Rate{}, fmt.Errorf("курс %s недоступен во всех источниках", currency)
+}
+
+// GetHistory возвращает историю курсов валют.
+func (s *ConverterService) GetHistory(ctx context.Context, from, to string, days int) ([]model.Rate, error) {
+	for _, backup := range s.backups {
+		if hp, ok := backup.(HistoryProvider); ok {
+			return hp.GetHistory(ctx, from, to, days)
+		}
+	}
+	return nil, fmt.Errorf("история курсов недоступна")
 }

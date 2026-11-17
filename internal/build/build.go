@@ -27,10 +27,10 @@ func New(ctx context.Context, cfg *config.Config) (*service.ConverterService, er
 
 	// Порядок важен (цепочка отказоустойчивости)
 	svc := service.NewConverterService(
-		redisCache, // Сначала кэш
-		cbrClient,  // ЦБ РФ
-		pgRepo,     // История из базы
-		fileRepo,   // Файл
+		redisCache, // 1. Кэш
+		cbrClient,  // 2. ЦБ РФ
+		pgRepo,     // 3. Бэкап#1 (История и курс)
+		fileRepo,   // 4. Бэкап#2 (Пока только курс)
 	)
 
 	return svc, nil
