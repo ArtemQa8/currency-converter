@@ -32,7 +32,6 @@ func NewConverterService(cache RateProvider, primary AllRatesProvider, backups .
 func (s *ConverterService) Convert(
 	ctx context.Context, amount decimal.Decimal, from, to string,
 ) (decimal.Decimal, error) {
-
 	if from == to {
 		return amount, nil
 	}
@@ -67,7 +66,6 @@ func (s *ConverterService) Convert(
 	}
 
 	return amount.Mul(fromRate.Value).Div(toRate.Value), nil
-
 }
 
 func (s *ConverterService) getRateToRub(ctx context.Context, currency string) (model.Rate, error) {

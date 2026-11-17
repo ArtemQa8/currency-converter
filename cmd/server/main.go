@@ -1,3 +1,4 @@
+// Package main запускает HTTP-сервер.
 package main
 
 //nolint:depguard

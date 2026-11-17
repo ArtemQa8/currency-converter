@@ -1,3 +1,4 @@
+// Package main реализует CLI-клиент.
 package main
 
 import (

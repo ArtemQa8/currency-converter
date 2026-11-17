@@ -68,5 +68,4 @@ func Load() (*Config, error) {
 		CBRAPIURL:     cbrURL,
 		RatesFilePath: ratesFilePath,
 	}, nil
-
 }

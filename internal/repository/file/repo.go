@@ -46,7 +46,7 @@ func (r *Repository) SaveRate(_ context.Context, rate model.Rate) error {
 	}
 
 	tmpPath := r.filePath + ".tmp"
-	tmpFile, err := os.OpenFile(tmpPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600) //nolint:gosec
+	tmpFile, err := os.OpenFile(tmpPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o600) //nolint:gosec
 	if err != nil {
 		return fmt.Errorf("ошибка открытия tmp файла: %w", err)
 	}

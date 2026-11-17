@@ -63,7 +63,6 @@ func (r *Repository) GetRate(ctx context.Context, baseCurrency, quoteCurrency st
 
 	err := r.pool.QueryRow(ctx, sqlQuery, baseCurrency, quoteCurrency).
 		Scan(&base, &quote, &valStr, &date, &source)
-
 	if err != nil {
 		return model.Rate{}, err
 	}
