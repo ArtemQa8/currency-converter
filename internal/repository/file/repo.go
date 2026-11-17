@@ -27,7 +27,7 @@ func NewRepository(filePath string) *Repository {
 }
 
 // SaveRate сохраняет курс в файл.
-func (r *Repository) SaveRate(ctx context.Context, rate model.Rate) error {
+func (r *Repository) SaveRate(_ context.Context, rate model.Rate) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
@@ -45,7 +45,7 @@ func (r *Repository) SaveRate(ctx context.Context, rate model.Rate) error {
 	}
 
 	tmpPath := r.filePath + ".tmp"
-	tmpFile, err := os.OpenFile(tmpPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+	tmpFile, err := os.OpenFile(tmpPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600) //nolint:gosec
 	if err != nil {
 		return fmt.Errorf("ошибка открытия tmp файла: %w", err)
 	}
@@ -70,7 +70,7 @@ func (r *Repository) SaveRate(ctx context.Context, rate model.Rate) error {
 }
 
 // GetRate получает курс из файла (или из seed, если файла нет).
-func (r *Repository) GetRate(ctx context.Context, baseCurrency, quoteCurrency string) (model.Rate, error) {
+func (r *Repository) GetRate(_ context.Context, baseCurrency, quoteCurrency string) (model.Rate, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 

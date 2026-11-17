@@ -92,7 +92,6 @@ func (c *Client) GetAllRates(ctx context.Context) (map[string]model.Rate, error)
 // GetRate получает курс указанной валюты к рублю через API ЦБ.
 // Поддерживает только рубль в качестве второй валюты (quoteCurrency).
 func (c *Client) GetRate(ctx context.Context, baseCurrency, quoteCurrency string) (model.Rate, error) {
-
 	if quoteCurrency != model.RUB {
 		return model.Rate{},
 			fmt.Errorf("клиент ЦБ поддерживает только RUB "+

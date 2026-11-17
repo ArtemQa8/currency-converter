@@ -1,3 +1,4 @@
+// Package service содержит бизнес-логику приложения.
 package service
 
 //nolint:depguard
@@ -28,7 +29,9 @@ func NewConverterService(cache RateProvider, primary AllRatesProvider, backups .
 }
 
 // Convert конвертирует сумму из одной валюты в другую.
-func (s *ConverterService) Convert(ctx context.Context, amount decimal.Decimal, from, to string) (decimal.Decimal, error) {
+func (s *ConverterService) Convert(
+	ctx context.Context, amount decimal.Decimal, from, to string,
+) (decimal.Decimal, error) {
 
 	if from == to {
 		return amount, nil

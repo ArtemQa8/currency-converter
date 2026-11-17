@@ -17,7 +17,7 @@ type mockProvider struct {
 	err   error
 }
 
-func (m *mockProvider) GetRate(_ context.Context, base, quote string) (model.Rate, error) {
+func (m *mockProvider) GetRate(_ context.Context, base, _ string) (model.Rate, error) {
 	if m.err != nil {
 		return model.Rate{}, m.err
 	}
@@ -28,7 +28,7 @@ func (m *mockProvider) GetRate(_ context.Context, base, quote string) (model.Rat
 	return model.Rate{}, errors.New("валюта не найдена")
 }
 
-func (m *mockProvider) SaveRate(_ context.Context, rate model.Rate) error {
+func (m *mockProvider) SaveRate(_ context.Context, _ model.Rate) error {
 	return nil
 }
 

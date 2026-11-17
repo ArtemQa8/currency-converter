@@ -13,7 +13,7 @@ import (
 	"github.com/ArtemQa8/currency-converter/internal/service"
 )
 
-// New собирает приложение: подключает базы, создает клиенты и инициализирует сервис
+// New собирает приложение: подключает базы, создает клиенты и инициализирует сервис.
 func New(ctx context.Context, cfg *config.Config) (*service.ConverterService, error) {
 	pgRepo, err := postgres.NewRepository(ctx, cfg.PostgresURL)
 	if err != nil {

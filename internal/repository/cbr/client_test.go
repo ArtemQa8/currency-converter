@@ -97,7 +97,7 @@ func TestClient_GetRate(t *testing.T) {
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.Header().Set("Content-Length", "100")
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`{"a":`))
+			_, _ = w.Write([]byte(`{"a":`))
 		}))
 		defer server.Close()
 
