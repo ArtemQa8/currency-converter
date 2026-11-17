@@ -1,5 +1,6 @@
 package api
 
+//nolint:depguard
 import "github.com/gin-gonic/gin"
 
 func NewRouter(h *Handler) *gin.Engine {

@@ -1,5 +1,6 @@
 package redis
 
+//nolint:depguard
 import (
 	"context"
 	"encoding/json"

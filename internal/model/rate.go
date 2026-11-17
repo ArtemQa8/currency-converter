@@ -1,5 +1,6 @@
 package model
 
+//nolint:depguard
 import (
 	"time"
 

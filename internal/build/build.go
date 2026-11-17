@@ -1,5 +1,6 @@
 package build
 
+//nolint:depguard
 import (
 	"context"
 	"fmt"

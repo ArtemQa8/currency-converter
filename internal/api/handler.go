@@ -1,5 +1,6 @@
 package api
 
+//nolint:depguard
 import (
 	"net/http"
 

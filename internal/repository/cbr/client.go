@@ -1,5 +1,6 @@
 package cbr
 
+//nolint:depguard
 import (
 	"context"
 	"encoding/json"
@@ -25,12 +26,13 @@ func NewClient(apiURL string) *Client {
 }
 
 type cbrResponse struct {
-	Date   time.Time `json:"Date"`
+	// ЦБ отдает с большой буквы.
+	Date   time.Time `json:"Date"` //nolint:tagliatelle
 	Valute map[string]struct {
-		CharCode string  `json:"CharCode"`
-		Nominal  int     `json:"Nominal"`
-		Value    float64 `json:"Value"`
-	} `json:"Valute"`
+		CharCode string  `json:"CharCode"` //nolint:tagliatelle
+		Nominal  int     `json:"Nominal"`  //nolint:tagliatelle
+		Value    float64 `json:"Value"`    //nolint:tagliatelle
+	} `json:"Valute"` //nolint:tagliatelle
 }
 
 // fetchAll скачивает JSON и возвращает мапу со всеми курсами к рублю.
@@ -70,7 +72,7 @@ func (c *Client) fetchAll(ctx context.Context) (map[string]model.Rate, error) {
 
 		rates[code] = model.Rate{
 			BaseCurrency:  code,
-			QuoteCurrency: "RUB",
+			QuoteCurrency: model.RUB,
 			Value:         normalizedValue,
 			Date:          data.Date,
 			Source:        "cbr",
@@ -89,12 +91,15 @@ func (c *Client) GetAllRates(ctx context.Context) (map[string]model.Rate, error)
 // Поддерживает только рубль в качестве второй валюты (quoteCurrency)
 func (c *Client) GetRate(ctx context.Context, baseCurrency, quoteCurrency string) (model.Rate, error) {
 
-	if quoteCurrency != "RUB" {
-		return model.Rate{}, fmt.Errorf("клиент ЦБ поддерживает только RUB в качестве котируемой валюты, получено: %s", quoteCurrency)
+	if quoteCurrency != model.RUB {
+		return model.Rate{},
+			fmt.Errorf("клиент ЦБ поддерживает только RUB "+
+				"в качестве котируемой валюты, получено: %s",
+				quoteCurrency)
 	}
 
 	// Курс RUB к RUB всегда =1, не делаем лишний запрос в API
-	if baseCurrency == "RUB" {
+	if baseCurrency == model.RUB {
 		return model.Rate{Value: decimal.NewFromInt(1), Source: "cbr"}, nil
 	}
 

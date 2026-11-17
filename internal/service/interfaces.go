@@ -1,5 +1,6 @@
 package service
 
+//nolint:depguard
 import (
 	"context"
 

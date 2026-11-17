@@ -1,5 +1,6 @@
 package service
 
+//nolint:depguard
 import (
 	"context"
 	"fmt"
@@ -31,7 +32,7 @@ func (s *ConverterService) Convert(ctx context.Context, amount decimal.Decimal, 
 	}
 
 	// В Рубли
-	if to == "RUB" {
+	if to == model.RUB {
 		rate, err := s.getRateToRub(ctx, from)
 		if err != nil {
 			return decimal.Zero, err
@@ -40,7 +41,7 @@ func (s *ConverterService) Convert(ctx context.Context, amount decimal.Decimal, 
 	}
 
 	// В другую валюту из Рублей
-	if from == "RUB" {
+	if from == model.RUB {
 		rate, err := s.getRateToRub(ctx, to)
 		if err != nil {
 			return decimal.Zero, err
@@ -64,7 +65,7 @@ func (s *ConverterService) Convert(ctx context.Context, amount decimal.Decimal, 
 }
 
 func (s *ConverterService) getRateToRub(ctx context.Context, currency string) (model.Rate, error) {
-	rate, err := s.cache.GetRate(ctx, currency, "RUB")
+	rate, err := s.cache.GetRate(ctx, currency, model.RUB)
 	if err == nil {
 		return rate, nil
 	}
@@ -98,7 +99,7 @@ func (s *ConverterService) getRateToRub(ctx context.Context, currency string) (m
 	}
 
 	for _, backup := range s.backups {
-		rate, err := backup.GetRate(ctx, currency, "RUB")
+		rate, err := backup.GetRate(ctx, currency, model.RUB)
 		if err == nil {
 			return rate, nil
 		}

@@ -1,5 +1,6 @@
 package postgres
 
+//nolint:depguard
 import (
 	"context"
 	"time"

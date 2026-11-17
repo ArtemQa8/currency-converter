@@ -1,7 +1,9 @@
 package config
 
+//nolint:depguard
 import (
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -22,22 +24,22 @@ func Load() (*Config, error) {
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		log.Fatal("Переменная PORT не задана. Скопируйте .env.example в .env и запустите снова")
 	}
 
 	pgURL := os.Getenv("PG_URL")
 	if pgURL == "" {
-		pgURL = "postgres://converter:converter@localhost:5432/converter?sslmode=disable"
+		log.Fatal("Переменная PG_URL не задана. Скопируйте .env.example в .env и запустите снова")
 	}
 
 	redisURL := os.Getenv("REDIS_URL")
 	if redisURL == "" {
-		redisURL = "localhost:6379"
+		log.Fatal("Переменная REDIS_URL не задана. Скопируйте .env.example в .env и запустите снова")
 	}
 
 	redisTTLStr := os.Getenv("REDIS_TTL")
 	if redisTTLStr == "" {
-		redisTTLStr = "24h"
+		log.Fatal("Переменная REDIS_TTL не задана. Скопируйте .env.example в .env и запустите снова")
 	}
 
 	redisTTL, err := time.ParseDuration(redisTTLStr)
@@ -47,12 +49,12 @@ func Load() (*Config, error) {
 
 	cbrURL := os.Getenv("CBR_URL")
 	if cbrURL == "" {
-		cbrURL = "https://www.cbr-xml-daily.ru/daily_json.js"
+		log.Fatal("Переменная CBR_URL не задана. Скопируйте .env.example в .env и запустите снова")
 	}
 
 	ratesFilePath := os.Getenv("RATES_FILE")
 	if ratesFilePath == "" {
-		ratesFilePath = "./data/rates.json"
+		log.Fatal("Переменная RATES_FILE не задана. Скопируйте .env.example в .env и запустите снова")
 	}
 
 	return &Config{

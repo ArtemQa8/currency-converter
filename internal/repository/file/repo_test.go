@@ -1,5 +1,6 @@
 package file_test
 
+//nolint:depguard
 import (
 	"context"
 	"os"
@@ -26,8 +27,8 @@ func TestFileRepository(t *testing.T) {
 		repo, filePath := setupRepo(t)
 
 		rate := model.Rate{
-			BaseCurrency:  "USD",
-			QuoteCurrency: "RUB",
+			BaseCurrency:  model.USD,
+			QuoteCurrency: model.RUB,
 			Value:         decimal.NewFromFloat(90.5),
 			Source:        "cbr",
 		}
@@ -38,9 +39,9 @@ func TestFileRepository(t *testing.T) {
 		_, err = os.Stat(filePath)
 		assert.NoError(t, err, "Файл должен существовать на диске")
 
-		savedRate, err := repo.GetRate(ctx, "USD", "RUB")
+		savedRate, err := repo.GetRate(ctx, model.USD, model.RUB)
 		assert.NoError(t, err)
-		assert.Equal(t, "USD", savedRate.BaseCurrency)
+		assert.Equal(t, model.USD, savedRate.BaseCurrency)
 		assert.Equal(t, "90.5", savedRate.Value.String())
 		assert.Equal(t, "file", savedRate.Source)
 	})
@@ -48,19 +49,19 @@ func TestFileRepository(t *testing.T) {
 	t.Run("Обновление существующей валюты", func(t *testing.T) {
 		repo, _ := setupRepo(t)
 
-		rateUSD := model.Rate{BaseCurrency: "USD", QuoteCurrency: "RUB", Value: decimal.NewFromInt(90)}
-		rateEUR := model.Rate{BaseCurrency: "EUR", QuoteCurrency: "RUB", Value: decimal.NewFromInt(100)}
+		rateUSD := model.Rate{BaseCurrency: model.USD, QuoteCurrency: model.RUB, Value: decimal.NewFromInt(90)}
+		rateEUR := model.Rate{BaseCurrency: model.EUR, QuoteCurrency: model.RUB, Value: decimal.NewFromInt(100)}
 
 		_ = repo.SaveRate(ctx, rateUSD)
 		_ = repo.SaveRate(ctx, rateEUR)
 
-		newRateUSD := model.Rate{BaseCurrency: "USD", QuoteCurrency: "RUB", Value: decimal.NewFromInt(95)}
+		newRateUSD := model.Rate{BaseCurrency: model.USD, QuoteCurrency: model.RUB, Value: decimal.NewFromInt(95)}
 		_ = repo.SaveRate(ctx, newRateUSD)
 
-		gotUSD, _ := repo.GetRate(ctx, "USD", "RUB")
+		gotUSD, _ := repo.GetRate(ctx, model.USD, model.RUB)
 		assert.Equal(t, "95", gotUSD.Value.String())
 
-		gotEUR, err := repo.GetRate(ctx, "EUR", "RUB")
+		gotEUR, err := repo.GetRate(ctx, model.EUR, model.RUB)
 		assert.NoError(t, err)
 		assert.Equal(t, "100", gotEUR.Value.String())
 	})
@@ -68,9 +69,9 @@ func TestFileRepository(t *testing.T) {
 	t.Run("Чтение из seed-файла (если основного нет)", func(t *testing.T) {
 		repo, _ := setupRepo(t)
 
-		rate, err := repo.GetRate(ctx, "USD", "RUB")
+		rate, err := repo.GetRate(ctx, model.USD, model.RUB)
 		assert.NoError(t, err)
-		assert.Equal(t, "USD", rate.BaseCurrency)
+		assert.Equal(t, model.USD, rate.BaseCurrency)
 		assert.Equal(t, "seed", rate.Source)
 	})
 }

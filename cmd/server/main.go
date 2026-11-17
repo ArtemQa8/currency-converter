@@ -1,5 +1,6 @@
 package main
 
+//nolint:depguard
 import (
 	"context"
 	"log"
@@ -30,8 +31,9 @@ func main() {
 	router := api.NewRouter(handler)
 
 	srv := &http.Server{
-		Addr:    ":" + cfg.Port,
-		Handler: router,
+		Addr:              ":" + cfg.Port,
+		Handler:           router,
+		ReadHeaderTimeout: 5 * time.Second,
 	}
 
 	go func() {

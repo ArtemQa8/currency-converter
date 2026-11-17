@@ -1,5 +1,11 @@
 package model
 
+const (
+	USD = "USD"
+	EUR = "EUR"
+	RUB = "RUB"
+)
+
 type Currency struct {
 	Code      string
 	Name      string

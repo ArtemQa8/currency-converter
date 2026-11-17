@@ -1,5 +1,6 @@
 package cbr_test
 
+//nolint:depguard
 import (
 	"context"
 	"net/http"
@@ -12,7 +13,7 @@ import (
 
 func setupTestClient(t *testing.T, status int, body string) (*cbr.Client, func()) {
 	t.Helper()
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(status)
 		w.Write([]byte(body))
 	}))
@@ -93,7 +94,7 @@ func TestClient_GetRate(t *testing.T) {
 	})
 
 	t.Run("Ошибка чтения тела ответа (обрыв соединения)", func(t *testing.T) {
-		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.Header().Set("Content-Length", "100")
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte(`{"a":`))

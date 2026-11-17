@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -11,23 +12,42 @@ import (
 	"strings"
 )
 
+const (
+	usd = "USD"
+	eur = "EUR"
+	rub = "RUB"
+	jpy = "JPY"
+	krw = "KRW"
+	cny = "CNY"
+)
+
 var currencyAliases = map[string]string{
-	"ДОЛЛАР": "USD", "ДОЛЛАРЫ": "USD", "ДОЛ": "USD",
-	"ДОЛАР": "USD", "ДОЛЛАРОВ": "USD", "ДОЛАРОВ": "USD",
-	"ДОЛЛ": "USD", "DOLLAR": "USD", "DOL": "USD",
-	"$": "USD", "БАКС": "USD", "BUCKS": "USD", "БАКСОВ": "USD",
-	"LJK": "USD", "LJKK": "USD", "ВЩД": "USD", "ГЫВ": "USD",
+	"ДОЛЛАР": usd, "ДОЛЛАРЫ": usd, "ДОЛ": usd,
+	"ДОЛАР": usd, "ДОЛЛАРОВ": usd, "ДОЛАРОВ": usd,
+	"ДОЛЛ": usd, "БАКС": usd, "БАКСОВ": usd,
+	"$": usd, "BUCKS": usd, "DOLLAR": usd, "DOL": usd, "DOLAR": usd,
+	"LJK": usd, "LJKK": usd, "ВЩД": usd, "ГЫВ": usd,
 
-	"ЕВРО": "EUR", "ЕВР": "EUR", "€": "EUR",
-	"УГКЩ": "EUR", "TDHJ": "EUR", "УГК": "EUR", "TDH": "EUR",
+	"ЕВРО": eur, "ЕВР": eur,
+	"€": eur, "EURO": eur,
+	"УГКЩ": eur, "TDHJ": eur, "УГК": eur, "TDH": eur,
 
-	"РУБЛЬ": "RUB", "РУБЛИ": "RUB", "РУБ": "RUB", "₽": "RUB",
-	"РУБЛЕЙ": "RUB", "РУБЛЯ": "RUB", "RUBLES": "RUB", "КГИДУЫ": "RUB",
-	"КГИ": "RUB", "КУИ": "RUB",
+	"РУБЛЬ": rub, "РУБЛИ": rub, "РУБ": rub, "РУБЛЕЙ": rub, "РУБЛЯ": rub,
+	"₽": rub, "RUBLES": rub,
+	"КГИДУЫ": rub, "КГИ": rub, "КУИ": rub, "HE<": rub,
 
-	"ЙЕНА": "JPY", "ЙЕНЫ": "JPY", "¥": "JPY", "ОЗН": "JPY",
+	"ЙЕНА": jpy, "ЙЕНЫ": jpy, "ЕНА": jpy, "ЙЕН": jpy, "ЕН": jpy,
+	"¥": jpy, "JENA": jpy, "YENA": jpy, "YEN": jpy, "JEN": jpy,
+	"ОЗН": jpy, "QTYF": jpy, "НУТФ": jpy, "ОУТФ": jpy,
 
-	"ВОНА": "KRW", "ВОНЫ": "KRW", "₩": "KRW", "ЛКЦ": "KRW",
+	"ВОНА": krw, "ВОНЫ": krw, "ВОН": krw,
+	"₩": krw, "WON": krw,
+	"ЛКЦ": krw, "DJYF": krw, "DJY": krw, "ЦЩТ": krw,
+
+	"ЮАНЬ": cny, "ЮАНЕЙ": cny, "ЮАНЯ": cny, "ЮАНИ": cny,
+	"Ұ": cny, "YUAN": cny, "RENMINBI": cny, "RMB": cny,
+	"ЖЕНЬМИНЬБИ": cny, "РЕНМИНБИ": cny, "ЖМБ": cny, "РМБ": cny,
+	">FYM": cny, "НГФТ": cny,
 }
 
 func main() {
@@ -84,7 +104,14 @@ func main() {
 		}
 		jsonReq, _ := json.Marshal(reqData)
 
-		resp, err := http.Post("http://localhost:8080/api/convert", "application/json", strings.NewReader(string(jsonReq)))
+		req, err := http.NewRequestWithContext(context.Background(), http.MethodPost, "http://localhost:8080/api/convert", strings.NewReader(string(jsonReq)))
+		if err != nil {
+			fmt.Println("Ошибка создания запроса:", err)
+			continue
+		}
+		req.Header.Set("Content-Type", "application/json")
+
+		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
 			fmt.Println("Ошибка соединения: сервер не запущен")
 			continue

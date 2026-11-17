@@ -1,5 +1,6 @@
 package file
 
+//nolint:depguard
 import (
 	"context"
 	_ "embed"
@@ -47,16 +48,16 @@ func (r *Repository) SaveRate(ctx context.Context, rate model.Rate) error {
 	}
 
 	if _, err := tmpFile.Write(newBytes); err != nil {
-		tmpFile.Close()
+		_ = tmpFile.Close()
 		return fmt.Errorf("ошибка записи в tmp файл: %w", err)
 	}
 
 	if err := tmpFile.Sync(); err != nil {
-		tmpFile.Close()
+		_ = tmpFile.Close()
 		return fmt.Errorf("ошибка синхроназции: %w", err)
 	}
 
-	tmpFile.Close()
+	_ = tmpFile.Close()
 
 	if err := os.Rename(tmpPath, r.filePath); err != nil {
 		return fmt.Errorf("ошибка переименования: %w", err)
