@@ -1,3 +1,4 @@
+// Package cbr реализует клиент для получения курсов валют с API ЦБ РФ.
 package cbr
 
 //nolint:depguard

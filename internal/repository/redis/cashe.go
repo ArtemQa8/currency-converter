@@ -1,3 +1,4 @@
+// Package redis реализует кэш на базе Redis.
 package redis
 
 //nolint:depguard

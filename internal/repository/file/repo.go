@@ -1,3 +1,4 @@
+// Package file реализует файловое хранилище курсов.
 package file
 
 //nolint:depguard

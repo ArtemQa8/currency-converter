@@ -1,3 +1,4 @@
+// Package api реализует HTTP-транспорт.
 package api
 
 //nolint:depguard

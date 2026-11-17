@@ -1,3 +1,4 @@
+// Package postgres реализует взаимодействие с базой данных PostgreSQL.
 package postgres
 
 //nolint:depguard

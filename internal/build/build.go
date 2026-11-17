@@ -1,3 +1,4 @@
+// Package build собирает зависимости приложения.
 package build
 
 //nolint:depguard
