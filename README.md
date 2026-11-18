@@ -66,8 +66,8 @@
 Создайте файл конфигурации из шаблона:
 * Для Linux/Mac: 
    ```bash
-   `cp .env.example .env`
-    ```
+   cp .env.example .env
+   ```
 * Для Windows (PowerShell):
    ```bash
    Copy-Item .env.example .env
@@ -113,10 +113,9 @@
    ```
 
 
-```markdown
 ## 🛠 Шпаргалка по командам
 
-### Управление контейнерами
+### Управление контейнерами:
 *   Запустить всё (сервер + базы): `docker compose -f deploy/docker-compose.yml up -d --build`
 *   Запустить только базы: `docker compose -f deploy/docker-compose.yml up -d postgres redis`
 *   Остановить всё: `docker compose -f deploy/docker-compose.yml down`
@@ -124,22 +123,21 @@
 *   Очистить базу Postgres (удалить все данные из таблиц): `docker exec -it converter-postgres psql -U converter -d converter -c "TRUNCATE TABLE rate_history RESTART IDENTITY;"`
 *   Очистить кэш Redis: `docker exec -it converter-redis redis-cli FLUSHALL`
 
-### Миграции базы данных (goose)
+### Миграции базы данных (goose):
 *   Накатить все миграции: `goose -dir migrations postgres "postgres://converter:converter@localhost:5432/converter?sslmode=disable" up`
 *   Откатить последнюю миграцию: `goose -dir migrations postgres "postgres://converter:converter@localhost:5432/converter?sslmode=disable" down`
 
-### Запуск приложения
+### Запуск приложения:
 *   Запустить сервер: `go run ./cmd/server`
 *   Запустить CLI: `go run ./cmd/client`
 *   Собрать бинарники: `go build -o bin/server ./cmd/server` и `go build -o bin/client ./cmd/client`
 
-### Тестирование и покрытие
+### Тестирование и покрытие:
 *   Запустить все тесты: `go test ./...`
 *   Запустить тесты конкретного пакета: `go test ./internal/service`
 *   Запустить тесты с детектором гонок (только Linux/Mac): `go test -race -count 100 ./...`
 *   Сгенерировать файл покрытия: `go test -coverprofile="coverage.out" ./...`
 *   Посмотреть покрытие в браузере (HTML): `go tool cover -html="coverage.out"`
 
-### Линтер
+### Линтер:
 *   Запустить проверку кода: `golangci-lint run`
-```
