@@ -68,7 +68,7 @@ func TestPostgresRepository(t *testing.T) {
 		assert.NoError(t, err)
 		assert.GreaterOrEqual(t, len(history), 3)
 		if len(history) >= 2 {
-			assert.True(t, history[0].Date.Before(history[1].Date))
+			assert.True(t, history[0].Date.After(history[1].Date))
 		}
 	})
 }

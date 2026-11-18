@@ -36,9 +36,8 @@ func (r *Repository) SaveRate(ctx context.Context, rate model.Rate) error {
 	sqlQuery := `
 		INSERT INTO rate_history (base_currency, quote_currency, value, date, source)
 		VALUES ($1, $2, $3, $4, $5)
-		ON CONFLICT (base_currency, quote_currency, date) 
-		DO UPDATE SET value = EXCLUDED.value, created_at = NOW()
-		WHERE rate_history.value != EXCLUDED.value
+		ON CONFLICT (base_currency, quote_currency, date, value) 
+		DO NOTHING
 	`
 
 	_, err := r.pool.Exec(

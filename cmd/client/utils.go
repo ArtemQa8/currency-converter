@@ -1,6 +1,9 @@
 package main
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 // isExitCommand проверяет, является ли ввод пользователя командой выхода в меню.
 func isExitCommand(input string) bool {
@@ -24,4 +27,23 @@ func normalizedCodes(input string) string {
 		return code
 	}
 	return input
+}
+
+// formatAmount форматирует число с учетом точности валюты.
+func formatAmount(amount float64, currency string) string {
+	// Словарь точности для валют без копеек или с 3+ знаками.
+	precisions := map[string]int{
+		"JPY": 0, // Японская Йена.
+		"KRW": 0, // Корейская Вона.
+		"KWD": 3, // Кувейтский Динар.
+		"BHD": 3, // Бахрейнский Динар.
+		"BTC": 8, // Биткоин.
+	}
+
+	precision := 2 // По умолчанию.
+	if p, ok := precisions[currency]; ok {
+		precision = p
+	}
+
+	return fmt.Sprintf("%.*f", precision, amount)
 }

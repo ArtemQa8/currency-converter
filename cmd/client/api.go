@@ -43,7 +43,10 @@ func doConvert(amount float64, from, to string) {
 	if result.Error != "" {
 		fmt.Printf("\nОшибка сервера: %s\n", result.Error)
 	} else {
-		fmt.Printf("\n\033[1mРезультат:\033[0m \033[36m%v %s = %.2f %s\033[0m\n", amount, from, result.Result, to)
+		fmt.Printf("\n\033[1mРезультат:\033[0m \033[36m%s %s = %s %s\033[0m\n",
+			formatAmount(amount, from), from,
+			formatAmount(result.Result, to), to,
+		)
 	}
 }
 
@@ -83,7 +86,7 @@ func showHistory(from string, days int) {
 		if len(dateStr) > 10 {
 			dateStr = dateStr[:10]
 		}
-		fmt.Printf(" %s: %.2f\n", dateStr, r.Value)
+		fmt.Printf(" %s: %s\n", dateStr, formatAmount(r.Value, from))
 	}
 }
 
@@ -121,12 +124,12 @@ func fetchRate(currency string) (float64, float64, error) {
 		return 0, 0, fmt.Errorf("нет данных")
 	}
 
-	last := result.Rates[len(result.Rates)-1].Value
+	last := result.Rates[0].Value
 
 	if len(result.Rates) < 2 {
 		return last, 0, nil
 	}
 
-	prev := result.Rates[0].Value
+	prev := result.Rates[1].Value
 	return last, prev, nil
 }

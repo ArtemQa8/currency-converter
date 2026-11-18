@@ -10,6 +10,21 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: converter
+          POSTGRES_PASSWORD: converter
+          POSTGRES_DB: converter
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
     - uses: actions/checkout@v4
 
@@ -21,6 +36,12 @@ jobs:
     - name: Download dependencies
       run: go mod download
 
+    - name: Install goose
+      run: go install github.com/pressly/goose/v3/cmd/goose@latest
+
+    - name: Run migrations
+      run: goose -dir migrations postgres "postgres://converter:converter@localhost:5432/converter?sslmode=disable" up
+
     - name: Install golangci-lint v2
       run: go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.14.0
 
@@ -29,6 +50,8 @@ jobs:
 
     - name: Test with Race Detector
       run: go test -race -count 100 ./...
+      env:
+        PG_URL: "postgres://converter:converter@localhost:5432/converter?sslmode=disable"
 
     - name: Build
       run: go build -v ./cmd/server ./cmd/client

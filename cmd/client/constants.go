@@ -26,7 +26,7 @@ var currencyAliases = map[string]string{
 
 	"ЙЕНА": jpy, "ЙЕНЫ": jpy, "ЕНА": jpy, "ЙЕН": jpy, "ЕН": jpy,
 	"¥": jpy, "JENA": jpy, "YENA": jpy, "YEN": jpy, "JEN": jpy,
-	"ОЗН": jpy, "QTYF": jpy, "НУТФ": jpy, "ОУТФ": jpy,
+	"ОЗН": jpy, "QTYF": jpy, "НУТФ": jpy, "ОУТФ": jpy, "QTY": jpy,
 
 	"ВОНА": krw, "ВОНЫ": krw, "ВОН": krw,
 	"₩": krw, "WON": krw,
@@ -35,5 +35,5 @@ var currencyAliases = map[string]string{
 	"ЮАНЬ": cny, "ЮАНЕЙ": cny, "ЮАНЯ": cny, "ЮАНИ": cny,
 	"Ұ": cny, "YUAN": cny, "RENMINBI": cny, "RMB": cny,
 	"ЖЕНЬМИНЬБИ": cny, "РЕНМИНБИ": cny, "ЖМБ": cny, "РМБ": cny,
-	">FYM": cny, "НГФТ": cny,
+	">FYM": cny, ".FYM": cny, "НГФТ": cny,
 }
