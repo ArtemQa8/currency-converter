@@ -64,39 +64,53 @@
 
 ### Шаг 1: Подготовка
 Создайте файл конфигурации из шаблона:
-`cp .env.example .env`
-(Или просто переименуйте `.env.example` в `.env`)
+* Для Linux/Mac: 
+   ```bash
+   `cp .env.example .env`
+    ```
+* Для Windows (PowerShell):
+   ```bash
+   Copy-Item .env.example .env
+   ```
+* Или просто переименуйте `.env.example` в `.env`
 
 ### Шаг 2: Запуск
 *   **Вариант А: Полный запуск в Docker**
 1. Соберите и запустите контейнеры:
    ```bash
    docker compose -f deploy/docker-compose.yml up -d --build
+   ```
 
 2. Примените миграции к базе данных (из корня проекта):
    ```bash
    goose -dir migrations postgres "postgres://converter:converter@localhost:5432/converter?sslmode=disable" up
+   ```
 
 3. Запустите CLI-клиент (он работает локально и стучится к серверу в Docker):
    ```bash
    go run ./cmd/client
+   ```
 
 *   **Вариант Б: Локальный запуск**
 1. Поднимите только базы данных (без сервера):
    ```bash
    docker compose -f deploy/docker-compose.yml up -d postgres redis
+   ```
 
 2. Примените миграции:
    ```bash
    goose -dir migrations postgres "postgres://converter:converter@localhost:5432/converter?sslmode=disable" up
+   ```
 
 3. Запустите сервер (в первом окне терминала):
    ```bash
    go run ./cmd/server
+   ```
 
 4. Запустите CLI (во втором окне терминала):
    ```bash
    go run ./cmd/client
+   ```
 
 
 ```markdown
@@ -128,3 +142,4 @@
 
 ### Линтер
 *   Запустить проверку кода: `golangci-lint run`
+```
