@@ -23,7 +23,7 @@ func (m *mockRepo) GetRate(_ context.Context, base, _ string) (model.Rate, error
 }
 func (m *mockRepo) GetAllRates(_ context.Context) (map[string]model.Rate, error) { return nil, nil }
 func (m *mockRepo) SaveRate(_ context.Context, _ model.Rate) error               { return nil }
-func (m *mockRepo) GetHistory(_ context.Context, from, to string, days int) ([]model.Rate, error) {
+func (m *mockRepo) GetHistory(_ context.Context, from, to string, _ int) ([]model.Rate, error) {
 	return []model.Rate{
 		{BaseCurrency: from, QuoteCurrency: to, Value: decimal.NewFromFloat(90.5)},
 	}, nil
@@ -43,7 +43,12 @@ func TestAPI_Convert(t *testing.T) {
 
 	t.Run("Успешная конвертация (200)", func(t *testing.T) {
 		body := `{"amount": 100, "from": "USD", "to": "RUB"}`
-		req, _ := http.NewRequest(http.MethodPost, "/api/convert", bytes.NewBufferString(body))
+		req, _ := http.NewRequestWithContext(
+			context.Background(),
+			http.MethodPost,
+			"/api/convert",
+			bytes.NewBufferString(body),
+		)
 		req.Header.Set("Content-Type", "application/json")
 		w := httptest.NewRecorder()
 
@@ -55,7 +60,12 @@ func TestAPI_Convert(t *testing.T) {
 
 	t.Run("Битый JSON (400)", func(t *testing.T) {
 		body := `{"amount": "abc", "from": "USD"}`
-		req, _ := http.NewRequest(http.MethodPost, "/api/convert", bytes.NewBufferString(body))
+		req, _ := http.NewRequestWithContext(
+			context.Background(),
+			http.MethodPost,
+			"/api/convert",
+			bytes.NewBufferString(body),
+		)
 		req.Header.Set("Content-Type", "application/json")
 		w := httptest.NewRecorder()
 
@@ -69,7 +79,12 @@ func TestAPI_History(t *testing.T) {
 	router := setupRouter()
 
 	t.Run("Успешная история (200)", func(t *testing.T) {
-		req, _ := http.NewRequest(http.MethodGet, "/api/history?from=USD&to=RUB&days=7", nil)
+		req, _ := http.NewRequestWithContext(
+			context.Background(),
+			http.MethodGet,
+			"/api/history?from=USD&to=RUB&days=7",
+			nil,
+		)
 		w := httptest.NewRecorder()
 
 		router.ServeHTTP(w, req)

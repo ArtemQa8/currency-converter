@@ -36,9 +36,14 @@ func (r *Repository) SaveRate(ctx context.Context, rate model.Rate) error {
 	sqlQuery := `
 		INSERT INTO rate_history (base_currency, quote_currency, value, date, source)
 		VALUES ($1, $2, $3, $4, $5)
+		ON CONFLICT (base_currency, quote_currency, date) 
+		DO UPDATE SET value = EXCLUDED.value, created_at = NOW()
+		WHERE rate_history.value != EXCLUDED.value
 	`
 
-	_, err := r.pool.Exec(ctx, sqlQuery,
+	_, err := r.pool.Exec(
+		ctx,
+		sqlQuery,
 		rate.BaseCurrency,
 		rate.QuoteCurrency,
 		rate.Value.String(),
@@ -87,11 +92,11 @@ func (r *Repository) GetHistory(ctx context.Context,
 	baseCurrency, quoteCurrency string, days int,
 ) ([]model.Rate, error) {
 	query := `
-		SELECT base_currency, quote_currency, value, date, source
+		SELECT DISTINCT ON (date::date) base_currency, quote_currency, value, date, source
 		FROM rate_history
 		WHERE base_currency = $1 AND quote_currency = $2
-			AND date >= NOW() - ($3 * INTERVAL '1 day')
-		ORDER BY date ASC
+		AND date >= NOW() - ($3 * INTERVAL '1 day')
+		ORDER BY date::date DESC, created_at DESC
 	`
 	rows, err := r.pool.Query(ctx, query, baseCurrency, quoteCurrency, days)
 	if err != nil {

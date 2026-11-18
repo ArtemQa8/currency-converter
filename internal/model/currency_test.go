@@ -1,5 +1,6 @@
 package model_test
 
+//nolint:depguard
 import (
 	"testing"
 

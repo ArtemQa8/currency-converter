@@ -23,3 +23,4 @@ data/*.json
 postman
 Thumbs.db
 NOTES.md
+playground.sql

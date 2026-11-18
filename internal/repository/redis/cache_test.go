@@ -28,7 +28,6 @@ func TestRedisCache(t *testing.T) {
 	}
 
 	t.Run("Сохранение и чтение курса", func(t *testing.T) {
-
 		err := cache.SaveRate(ctx, rate)
 		assert.NoError(t, err)
 
