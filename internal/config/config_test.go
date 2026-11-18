@@ -1,5 +1,6 @@
 package config_test
 
+//nolint:depguard
 import (
 	"testing"
 

@@ -95,7 +95,12 @@ func TestAPI_History(t *testing.T) {
 	})
 
 	t.Run("Не переданы обязательные параметры (400)", func(t *testing.T) {
-		req, _ := http.NewRequest(http.MethodGet, "/api/history?days=7", nil)
+		req, _ := http.NewRequestWithContext(
+			context.Background(),
+			http.MethodGet,
+			"/api/history?days=7",
+			nil,
+		)
 		w := httptest.NewRecorder()
 
 		router.ServeHTTP(w, req)

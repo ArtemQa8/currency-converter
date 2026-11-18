@@ -13,10 +13,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const testSource = "test"
+
 func TestPostgresRepository(t *testing.T) {
 	pgURL := os.Getenv("PG_URL")
 	if pgURL == "" {
-		pgURL = "postgres://converter:converter@localhost:5432/converter?sslmode=disable"
+		pgURL = "postgres://converter:converter@localhost:5432/converter?sslmode=disable" //nolint:gosec
 	}
 
 	ctx := context.Background()
@@ -34,7 +36,7 @@ func TestPostgresRepository(t *testing.T) {
 			QuoteCurrency: to,
 			Value:         decimal.NewFromFloat(1.5),
 			Date:          time.Now(),
-			Source:        "test",
+			Source:        testSource,
 		}
 
 		err := repo.SaveRate(ctx, rate)
@@ -52,14 +54,14 @@ func TestPostgresRepository(t *testing.T) {
 			QuoteCurrency: to,
 			Value:         decimal.NewFromInt(10),
 			Date:          time.Now().Add(-48 * time.Hour),
-			Source:        "test",
+			Source:        testSource,
 		})
 		_ = repo.SaveRate(ctx, model.Rate{
 			BaseCurrency:  from,
 			QuoteCurrency: to,
 			Value:         decimal.NewFromInt(20),
 			Date:          time.Now().Add(-24 * time.Hour),
-			Source:        "test",
+			Source:        testSource,
 		})
 
 		history, err := repo.GetHistory(ctx, from, to, 3)

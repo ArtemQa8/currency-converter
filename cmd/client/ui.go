@@ -29,11 +29,12 @@ func printHeader() {
 		diff := last - prev
 		percent := (diff / prev) * 100
 
-		if diff > 0 {
+		switch {
+		case diff > 0:
 			fmt.Printf("%s: %.2f руб. \033[32m▲ +%.2f%%\033[0m\n", name, last, percent)
-		} else if diff < 0 {
+		case diff < 0:
 			fmt.Printf("%s: %.2f руб. \033[31m▼ %.2f%%\033[0m\n", name, last, percent)
-		} else {
+		default:
 			fmt.Printf("%s: %.2f руб.\n", name, last)
 		}
 	}
