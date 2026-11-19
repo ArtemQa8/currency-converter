@@ -59,7 +59,9 @@ func (r *Repository) GetRate(ctx context.Context, baseCurrency, quoteCurrency st
 		SELECT base_currency, quote_currency, value, date, source
 		FROM rate_history
 		WHERE base_currency = $1 AND quote_currency = $2
-		ORDER BY date DESC
+		ORDER BY date::date DESC, 
+		         CASE WHEN source = 'cbr' THEN 1 ELSE 0 END DESC, 
+		         created_at DESC
 		LIMIT 1
 	`
 
@@ -95,7 +97,9 @@ func (r *Repository) GetHistory(ctx context.Context,
 		FROM rate_history
 		WHERE base_currency = $1 AND quote_currency = $2
 		AND date >= NOW() - ($3 * INTERVAL '1 day')
-		ORDER BY date::date DESC, created_at DESC
+		ORDER BY date::date DESC, 
+        		CASE WHEN source = 'cbr' THEN 1 ELSE 0 END DESC, 
+        		created_at DESC
 	`
 	rows, err := r.pool.Query(ctx, query, baseCurrency, quoteCurrency, days)
 	if err != nil {
