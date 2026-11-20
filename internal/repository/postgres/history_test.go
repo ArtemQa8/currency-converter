@@ -9,6 +9,7 @@ import (
 
 	"github.com/ArtemQa8/currency-converter/internal/model"
 	"github.com/ArtemQa8/currency-converter/internal/repository/postgres"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
 )
@@ -26,6 +27,14 @@ func TestPostgresRepository(t *testing.T) {
 	if err != nil {
 		t.Skip("Postgres недоступен. Пропускаем тест: ", err)
 	}
+
+	t.Cleanup(func() {
+		cleanupPool, err := pgxpool.New(context.Background(), pgURL)
+		if err == nil {
+			_, _ = cleanupPool.Exec(context.Background(), "DELETE FROM rate_history WHERE source = 'test'")
+			cleanupPool.Close()
+		}
+	})
 
 	from := "TS1"
 	to := "TS2"

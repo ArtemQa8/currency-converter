@@ -125,3 +125,26 @@ func (s *ConverterService) GetHistory(ctx context.Context, from, to string, days
 	}
 	return nil, fmt.Errorf("история курсов недоступна")
 }
+
+// UpdateAllRates принудительно запрашивает все курсы из ЦБ и обновляет кэш и базы данных.
+func (s *ConverterService) UpdateAllRates(ctx context.Context) error {
+	_, err, _ := s.sf.Do("fetch_all_cbr", func() (interface{}, error) {
+		allRates, err := s.primary.GetAllRates(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, r := range allRates {
+			if saver, ok := s.cache.(RateSaver); ok {
+				_ = saver.SaveRate(ctx, r)
+			}
+			for _, backup := range s.backups {
+				if saver, ok := backup.(RateSaver); ok {
+					_ = saver.SaveRate(ctx, r)
+				}
+			}
+		}
+		return allRates, nil
+	})
+	return err
+}

@@ -22,14 +22,38 @@ func main() {
 		log.Fatalf("Ошибка загрузки конфига: %v", err)
 	}
 
-	ctx := context.Background()
+	ctx, cancel := context.WithCancel(context.Background())
+
 	svc, err := build.New(ctx, cfg)
 	if err != nil {
 		log.Fatalf("Ошибка сборки приложения: %v", err)
 	}
 
+	defer cancel()
+
 	handler := api.NewHandler(svc)
 	router := api.NewRouter(handler)
+
+	log.Println("Первоначальная загрузка курсов...")
+	if err := svc.UpdateAllRates(ctx); err != nil {
+		log.Printf("Ошибка первичной загрузки: %v", err)
+	}
+
+	go func() {
+		ticker := time.NewTicker(3 * time.Hour)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ticker.C:
+				log.Println("Фоновое обновление курсов...")
+				if err := svc.UpdateAllRates(ctx); err != nil {
+					log.Printf("Ошибка фонового обновления: %v", err)
+				}
+			case <-ctx.Done():
+				return
+			}
+		}
+	}()
 
 	srv := &http.Server{
 		Addr:              ":" + cfg.Port,
@@ -50,8 +74,10 @@ func main() {
 
 	log.Println("Получен сигнал остановки, завершаем работу...")
 
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	cancel()
+
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer shutdownCancel()
 
 	if err := srv.Shutdown(shutdownCtx); err != nil {
 		log.Printf("Ошибка при graceful shutdown: %v", err)
